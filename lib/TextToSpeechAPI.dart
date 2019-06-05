@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert' show json, utf8;
-import 'package:flutter_wavenet/voice.dart';
+import 'package:flutter_wavenet/services/voice.dart';
+
 
 import 'services/apiKey.dart';
 
