@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:audioplayer/audioplayer.dart';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_wavenet/services/voice.dart';
+// import 'package:flutter_wavenet/services/voice.dart';
 
 
 void main() => runApp(new MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Nanny Plum',
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.green,
       ),
       home: new MyHomePage(title: 'Nanny Plum'),
     );
@@ -96,14 +96,30 @@ class _MyHomePageState extends State<MyHomePage> {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: TextField(
+              style: TextStyle(
+                color: Colors.black, 
+                fontWeight: FontWeight.bold, 
+                fontFamily: 'Verdana',
+              ),
               autofocus: true,
               controller: _searchQuery,
               keyboardType: TextInputType.multiline,
-              maxLines: null,
+              maxLines: 2,
+              
               decoration: InputDecoration(
-                  hintText: 'Please enter text'
+                  icon: Icon(Icons.announcement),
+                  hintText: 'Type Something!',
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                    ),
+                  ),
               ),
             ),
+          ),
+          new Image(
+              image: new AssetImage("assets/nanny.jpg"),
+              fit: BoxFit.contain
           )
         ])
       ),
