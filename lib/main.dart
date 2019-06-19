@@ -3,8 +3,8 @@ import 'package:flutter_wavenet/TextToSpeechAPI.dart';
 import 'dart:io';
 import 'package:audioplayer/audioplayer.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:path_provider/path_provider.dart';
-// import 'package:flutter_wavenet/services/voice.dart';
 
 
 void main() => runApp(new MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Nanny Plum',
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.red,
       ),
       home: new MyHomePage(title: 'Nanny Plum'),
     );
@@ -34,15 +34,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   
-  // List<Voice> _voices = [];
-  // Voice _selectedVoice;
   AudioPlayer audioPlugin = AudioPlayer();
-  final TextEditingController _searchQuery = TextEditingController();
+  final TextEditingController _mamaQuery = TextEditingController();
+  final TextEditingController _babyQuery = TextEditingController();
+
+  bool _visible = false;
+  bool _isWrong = false;
 
 
   initState() {
     super.initState();
-    // getVoices();
   }
 
 
@@ -60,55 +61,33 @@ class _MyHomePageState extends State<MyHomePage> {
       await audioPlugin.play(file.path, isLocal: true);
   }
   
-  /*void getVoices() async {
-    final voices = await TextToSpeechAPI().getVoices();
-    if (voices == null) return;
-    setState(() {
-      _selectedVoice = voices.firstWhere((e) => e.name == 'en-US-Wavenet-F' && e.languageCodes.first == 'en-US', orElse: () => Voice('en-US-Wavenet-F', 'FEMALE', ['en-US']));
-      _voices = voices;
-    });
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.title),
       ),
-      body: SingleChildScrollView(child:
+      body: SingleChildScrollView(
+        child: new Stack(children: <Widget>[
+        
         Column(children: <Widget>[
-          /*Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: DropdownButton<Voice>(
-              value: _selectedVoice,
-              hint: Text('Select Voice'),
-              items: _voices.map((f) => DropdownMenuItem(
-                value: f,
-                child: Text('${f.name} - ${f.languageCodes.first} - ${f.gender}'),
-              )).toList(),
-              onChanged: (voice) {
-                setState(() {
-                  _selectedVoice = voice;
-                });
-              },
-            ),
-          ),*/
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 16.0),
             child: TextField(
               style: TextStyle(
-                color: Colors.black, 
-                fontWeight: FontWeight.bold, 
-                fontFamily: 'Verdana',
+                color: Colors.black,
+                fontFamily: 'Comic Sans',
+                fontSize: 20.0
               ),
               autofocus: true,
-              controller: _searchQuery,
+              obscureText: true,
+              controller: _mamaQuery,
               keyboardType: TextInputType.multiline,
-              maxLines: 2,
+              // maxLines: 2,
               
               decoration: InputDecoration(
-                  icon: Icon(Icons.announcement),
-                  hintText: 'Type Something!',
+                  icon: Icon(Icons.keyboard, size: 60.0),
+                  hintText: 'Mama Types...',
                   border: new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(25.0),
                     borderSide: new BorderSide(
@@ -117,21 +96,89 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
-          new Image(
-              image: new AssetImage("assets/nanny.jpg"),
-              fit: BoxFit.contain
+          
+          FloatingActionButton(
+            elevation: 4.0,
+            child: Icon(Icons.play_circle_filled),
+            onPressed: () {
+              final text = _mamaQuery.text;
+              if (text.length == 0) return;
+              synthesizeText(text, '');
+            },
+          ),
+
+          Divider(
+            color: Colors.black,
+            height: 36,
+          ),
+
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: TextField(
+              style: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Comic Sans',
+                fontSize: 20.0
+              ),
+              autofocus: true,
+              obscureText: false,
+              controller: _babyQuery,
+              keyboardType: TextInputType.multiline,
+              //maxLines: 2,
+              
+              decoration: InputDecoration(
+                  icon: Icon(Icons.keyboard, size: 60.0),
+                  hintText: 'Baby Types...',
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(25.0),
+                    borderSide: new BorderSide(
+                    ),
+                  ),
+              ),
+            ),
+          ),
+          
+          FloatingActionButton(
+            elevation: 4.0,
+            child: Icon(Icons.play_circle_filled),
+            onPressed: () {
+              final text = _babyQuery.text;
+              if (text.length == 0) return;
+              synthesizeText(text, '');
+
+              setState(() {
+                if(_mamaQuery.text.toLowerCase() != _babyQuery.text.toLowerCase()) {
+                  _isWrong = true;
+                  return;
+                } else {
+                  _isWrong = false;
+                }
+                _visible = true;
+                Timer(Duration(seconds: 3), () {
+                  print("Yeah, this line is printed after 3 second");
+                  setState(() {
+                     _visible = false;
+                  });
+                });
+              });
+            },
+          ),
+
+          if(_isWrong) Padding(
+            padding: EdgeInsets.symmetric(vertical: 18.0, horizontal: 16.0),
+            child: Image(
+            image: new AssetImage("assets/wrong.gif"),
+              fit: BoxFit.fill,
+            )
           )
-        ])
-      ),
-      floatingActionButton: FloatingActionButton(
-        elevation: 4.0,
-        child: Icon(Icons.play_circle_filled),
-        onPressed: () {
-          final text = _searchQuery.text;
-          if (text.length == 0) return;
-          synthesizeText(text, '');
-        },
-      ),
+        ]),
+       
+        if(_visible) Image(
+          image: new AssetImage("assets/nanny-trans.png"),
+          fit: BoxFit.fill,
+        )
+      ]
+      ))
     );
   }
 
