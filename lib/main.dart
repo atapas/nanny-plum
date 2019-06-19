@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Nanny Plum',
       debugShowCheckedModeBanner: false,
       theme: new ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.green,
       ),
       home: new MyHomePage(title: 'Nanny Plum'),
     );
@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
               
               decoration: InputDecoration(
                   icon: Icon(Icons.keyboard, size: 60.0),
-                  hintText: 'Mama Types...',
+                  hintText: 'Mamma Types...',
                   border: new OutlineInputBorder(
                     borderRadius: new BorderRadius.circular(25.0),
                     borderSide: new BorderSide(
